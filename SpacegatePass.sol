@@ -125,6 +125,7 @@ contract SpacegatePass is ERC1155, PaymentSplitter {
     }
 
     function ownerMint(address to, uint256 amount) external onlyOwner {
+        if (currentSupply + amount > maxSupply) revert MintExceedsMaxSupply();
         _mint(to, tokenId, amount, "");
         currentSupply += amount;
     }
