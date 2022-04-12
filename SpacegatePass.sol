@@ -72,16 +72,15 @@ contract SpacegatePass is ERC1155, PaymentSplitter {
         bytes32[] calldata proof
     ) external payable {
         if (!allowlistIsOpen) revert AllowlistSaleNotStarted();
-        if (currentSupply + amount > maxSupply) revert MintExceedsMaxSupply();
+        if (currentSupply + mintAmount > maxSupply) revert MintExceedsMaxSupply();
         // Throw if address has already claimed tokens
         if (hasClaimed[to] + mintAmount > proofAmount) revert AlreadyClaimed();
+        if (msg.value != mintPrice * mintAmount) revert PaymentNotCorrect();
 
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(to, proofAmount));
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
         if (!isValidLeaf) revert NotInMerkle();
-
-        if (msg.value != mintPrice * mintAmount) revert PaymentNotCorrect();
 
         // Set address to claimed
         hasClaimed[to] += mintAmount;
@@ -91,14 +90,13 @@ contract SpacegatePass is ERC1155, PaymentSplitter {
         currentSupply += mintAmount;
     }
 
-    function publicMint(uint256 amount) external payable {
+    function publicMint() external payable {
         if (!publicSaleIsOpen) revert PublicSaleNotStarted();
-        if (amount > 1) revert TooManyMintsPerTransaction();
-        if (currentSupply + amount > maxSupply) revert MintExceedsMaxSupply();
-        if (msg.value != mintPrice * amount) revert PaymentNotCorrect();
+        if (currentSupply + 1 > maxSupply) revert MintExceedsMaxSupply();
+        if (msg.value != mintPrice) revert PaymentNotCorrect();
 
-        _mint(msg.sender, tokenId, amount, "");
-        currentSupply += amount;
+        _mint(msg.sender, tokenId, 1, "");
+        currentSupply += 1;
     }
 
     /// ============ Owner Functions ============
