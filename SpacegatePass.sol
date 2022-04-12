@@ -24,7 +24,7 @@ contract SpacegatePass is ERC1155, PaymentSplitter {
     uint256 public constant maxSupply = 2000;
     uint256 public currentSupply = 0;
 
-    string public baseURI = "ipfs://QmRajAWu6uRWbm4awYUzX4fmGGyUBFFBL2NRXbxtNtpQpN";
+    string public baseURI = "ipfs://QmZfAGUiZHwabAUbR2TbsJYjARaCuUxVR63yPqnuxTK8Dv";
 
     bytes32 private merkleRoot;
     address public owner;
